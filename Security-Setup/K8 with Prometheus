@@ -1,0 +1,27 @@
+Monitoring k8 with Prometheus:
+
+Installing Helm:
+To install Prometheus on Node Exporter we need to install through Helm.
+Install Helm on Local Machine:
+
+sudo apt-get update
+sudo apt-get install -y apt-transport-https
+curl https://.............
+sudo apt-get install -y helm
+
+Install Node Exporter using Helm:
+Add Pormtehus community to Helm Rep:
+
+Create a K8 namespace for the node exporter:
+
+Install the node Exporter using Helm:
+
+Add a job to scrape metrics on nodeip:9001/metrics in prometehus.yml
+
+- job_name: 'Netflix(job name)'
+   metrics_path: '/metrics'
+   static_configs:
+     - targets: ['odeIP:9100']
+
+Reload or restart Promtehus to apply these changes to config.
+
