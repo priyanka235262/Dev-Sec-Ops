@@ -1,0 +1,152 @@
+In this phase we will install and configure jenkins cicd on an ec2 instance,set up essential plugins,and define a CICD pipeline.The pipeline will incorporate stesp for building,analysing code quality(SonarQube), and security scanning(Trivy).This will help us to automate the development process,ensuirng secure and high-quality application.
+
+Step1: Install Jenkins on EC2
+ Install OpenJDK
+Verify Java installation and Install Plugins
+
+sudo apt update
+sudo apt install fontconfig penjdk-17-jre
+java-version
+
+sudo wget............
+echo deb........
+sudo apt-get update
+sudo apt-get install jenkins
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+
+Access Jenkins Web Interface: Public Ip:8080
+
+Ste2: Configure Jenkins Plugins
+To integrate SonarQube,Docker,and Nodejs into jenkins,we need to install the necessary plugins.
+
+Install Necessary Jenkins Plugins:
+Go to Mnage Jenkins>Manage plugins
+SonarQube Scanner(for SonarQube integration)
+Docker(to integrate docker builds)
+NodeJS(if needed for Node.js builds)
+Eclispse Temurin Installer(Install)
+
+Configure Java and Node JS  in Global Tool:
+Goto manage jenkins>Tools>Install jdk(17) and Node JS(16)->click(save)
+
+OWASP Dependency Check Configuration in jenkins
+Go to dashboard in jenkins>manage plugins
+Dependency-Check plugin
+Install
+
+3.2 Configure the OWASP dependency-check tool in jenkins
+Go to jenkins dashboard> manage jenkins> global tool confoguration> 
+Scroll down to OWASP Dependency-Check section
+Click on Add Dependency-Check and provide the following:
+Name: Give a name to the tool e.g,DP-check (this name will be referenced in the pipeline)
+Install automatically:Check this option to allow jenkins to download and install the tool automatically.
+Directory:Optionally,we can specify a custom directory to install the tool if required.
+Save configuration
+
+This config ensures that jenkins has access to the Dependency-Check tool for security access.
+
+3.3:Configure OWASP dependency check in jenkins pipeline:
+
+pipeline {
+  agent any
+
+  tools {
+      jdk 'jdk17'
+      nodejs 'node16'
+  }
+  environment {
+     SCANNER_HOME = tool 'sonar-scanner'
+  }
+  stages {
+    stage ('Clean Workspace') {
+       steps {
+             cleanWs () 
+    }
+  }
+ stage('Checkout from Git') {
+    step s{
+          gt branch: 'main', url:'<URL>'
+  }
+
+ stage('Install Dependency'){
+     steps {
+         sh "npm install"
+     } 
+   }
+stage('OWASP Dependency-Check Scan') {
+     steps {
+             dependencyCheck
+            dependencyCheckPublisher
+         }
+        }
+      }
+   }
+
+Install Docker tools and Docker Plugin
+Go to dashboard in jenkisn web interface
+manage plugins > docker
+docker commons
+docker pipeline
+docker API
+docker-build-step
+
+Add DockerHub Credentials:
+manage credentials > System > Global Credentials > Add Credentials > Secret Text > Enter Dockerhub credentials(UserName and Password) and give the credentials ID 
+Click Ok
+
+Now we have installed Dependency-Check plugin,configured the tool,and added Docker-related plugins along with DockerHub credentials in Jenkins.We can now proceed with configuring Jenkins pileine to include these tools and cfredentials in teh CI/CD pipeline.
+
+
+Security Scanning with SonarQube and Trivy:
+Well be configuring SonarQube and Trivy for security scanning in the DevSceOps pipeline.This involves integrating SonaQube with Jenkins for continious code analysis and using Trivy to scan Docker Images for vulnerabilities.
+
+Install and Configure SonaQube with Jenkins
+
+SonarQube is a tool use dfor static cod analysis to find bugs,code smells, and security vulnerabilities.Integrating SonaQube with Jenkins to allow us to run security and   quality scans automatically as part of our CI/CD pipeline.
+
+Install and Run SonarQube in a Docker Container:
+First,run SonarQube in aDocker container on our EC2 instance.
+
+docker run -d --name sonar -p 9000:9090 sonarqube:latest
+
+This command will pull the official SonarQube Docker image and run it in detached mode.Mapping the container's port 9000 to the EC2 instance's port 9000
+
+
+Install SonarQube plugins in Jenkins:
+SonarQube Scanner plugin install
+Configure SonarQube server in Jenkins:
+Navigate to manage   Manage jenkins> configure systems
+Scroll down to SonarQube servers and click add SonarQube
+Select Install automatiaclly to have jenkins download and install the srever.
+We can also choose from Install from specific location if we have custom setup.
+Click Save
+
+Configure Jenkins pipeline for Sonaqube analaysis:
+For Pipeline Job (JenkinsFile): If we sue a Jenkinsfile for pipeline as code,here's a basic pipeline setup:
+
+pipeline {
+   agent any {
+   environemnt {
+        SONARQUBE = 'SonarQube'
+  }
+stages {
+      stage('Build') {
+        steps {
+          script {
+           //Your build steps here
+  }   
+  }
+}   
+stage('SonarQube Analysis') {
+  steps {
+        script {
+          withSonarQubeEnv('SonarQube')
+               sh 'mvn clean install'  
+      }
+     }
+    }
+   } 
+  }
+}
+
