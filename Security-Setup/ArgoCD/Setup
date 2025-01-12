@@ -1,0 +1,19 @@
+Install ArgoCD:
+
+Setup Github Repository as Source:
+
+Create an ArgoCD application:
+name: Set the name for application
+destination: Define the dest. where application should be deployed.
+project: Specify the project the applicatio n belongs to.
+source: Set the source of application,including the Github repo,URL,revision,and the path to the application within the repo.
+
+syncPolicy: Configure the y=sync policy,inclusing automatic syncing,puning,and self-healing
+
+Access the application: 
+To access the app make sure port 30007 is open in our security group and then pne a new job paste NodeIp:30007,our app should be running.
+
+Cleanup:
+Cleanup AWS Instances:
+Terminate AWS EC2 instances that are no longer needed.
+
