@@ -1,0 +1,107 @@
+We can set up Prometheus and Grfana on the same EC2 instance as Jenkins server.However if the instance starts running slowly because it's handling both Jenkins and the monitoring tools,it's better to seperate them.
+
+Install Prometheus and Grafana:
+
+First,create  a dedicated Linux user for Prometheus and download prometheus:
+Extract Prometheus files,move them,and create directories:
+Set ownership for directories
+Create systemd unit configuration file for Prometheus
+
+add the following content to Prometheus.service file:
+
+Enable and start Pronetheus:
+sudo systemctl enable prometheus
+sudo systemctl start prometheus
+sudo systemctl status prometheus
+
+Installing Node Exporter:
+Node Exporter is an open source Prometheus exporter that exposes hardware and OS-level metrics from Linux and Unix-based systems.It collects data like CPU usage,disk,memory,and network statistics.Allowing Prometheus to monitor systems performance.
+
+Create a system user for Node Exporter and download Node Exporter:
+  Extract Noxde Exporter files,move the binary,and clean up:
+
+
+Create a systemd unit configuraton file for Node exporter:
+
+Add the following content to the node_exporter.service file:
+
+Enable nad start Node Exporter:
+sudo systemctl enable node_exporter
+sudo systemctl start node_exporter
+
+Configure Prometheus PLugin Integration:
+Integrate jenkins with prometheus to monitor CICD pipeline.
+
+Prometheus Configuration:
+To configure prometheus to scrape metrices from Node exporter and Jenkins,you need to modify the prometehus.yml file.Here is an ex promtehues.yml configuration for setup:
+
+
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+ - job_name: 'node_exporter'
+   static_configs:
+   - targets: ['localhost']
+
+-job_name: 'jenkins'
+ metrics_path: '/prometheus'
+ static_configs:
+   - targets: ['<your-jenkins-ip>:<your-jenkins-port>']
+
+replace <your-jenkins-ip> and <your-jenkins-port> with the appropriate values for your Jenkins setup.
+
+Checks the validity of the configuration file:
+
+prontool check config /etc/prontheus/
+
+Reload the prometehus configuration without restarting.
+
+We can access Promtheus targets at:http://<your-prontehus-ip>:9090/targets
+
+Install Grafana:
+
+Install dependencies:
+sudo apt-get upadte
+sudo apt-get install -y apt-transport-https ..........
+
+Add the GPG key:
+
+Add Grafana repo:
+
+Update the package list and install Grafana
+
+Enable and Start Grfana service
+
+Check Grafana  Service
+
+Access Grafana Web Interface
+
+Change the Default Password:
+
+Add Prometheus  Data Source:
+
+Import a Dashboard:
+
+Configure Prometheus Plugin Integration:
+
+Phase 6: K8 Cluster and Monitoring:
+EKS Cluster Setup:
+
+Setting AWS CLI and Configuring Credentials:
+Install AWS CLI:
+sudo apt-get update
+sudo apt-get install awscli
+aws --version
+
+Configure AWS CLI with Credentials:
+ aws configure
+
+It will prompt us to enter the following information:
+AWS Acccess kEy ID:
+AWS Secret Key ID:
+Default Region Name:
+Default output format:
+
+Access the EKS Cluster:
+
