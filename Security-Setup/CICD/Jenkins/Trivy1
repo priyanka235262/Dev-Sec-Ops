@@ -1,0 +1,98 @@
+Install and Run Trivy for Docker Image Scanning
+Trivy is simple yet powerful security scanner for Docker Images that detects vulnerabilities and misconfigurations
+
+1.Install Trivy on EC2
+Run the following command to install Trivy on EC2 instance:
+ sudo apt-get install trivy
+
+2.Scan Docker Images with Trivy
+trivy image <image-name>
+
+Replace <image_Id> with the ID of the Docker image you want to scan
+The output will show vulnerabilities detected in the image,with details like severity and affected packages
+
+
+Integrating SONARQUBE AND TRIVY into Jenkins Pipeline:
+Trivy and SonarQube to scan the code and Docker images automatically during CICD process
+
+SonarQube: Scans the code for quality issues,bugs,code smells,and security vulnerabilities.
+
+Trivy: Scans Docker images for known vulnerabilities.
+
+pipeline {
+       agent any
+       tools {
+            jdk 'jdk17'
+             nodejs 'nodeja16'
+  }
+ environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+  }
+stages {
+    stage('Clean Package') {
+        steps {
+           cleanWs()
+   }
+  }
+stage('Checkout from Git') {
+     steps {
+          git branch: 'main', url: ''
+   }
+  }
+stage('SonarQube Analysis') {
+   steps {
+         withSonarQubeEnv('sonar-server')
+            sh '''
+            $SCANNER_HOME/bin/sonar-scanner..............
+      }
+   }
+}
+stage('Quality Gate') {
+   steps {
+      script {
+          waitFroQualityGate abort...............
+     }  
+   }
+  }
+stage('Install Dependencies') {
+   steps {
+              sh "npm install"
+    }
+  }
+stage('OWASP FS scan') {
+    steps {
+      dependencyCheck additionalArgument....
+      dependencyCheck additionalArgument........
+   } 
+} 
+
+stage('TRIVY FS scan') {
+   steps {
+           sh "trivy fs  . > trivyfs.txt"
+  }
+ }
+stage('Docker Build & Push'){
+   steps {
+       script {
+              withDockerRegistry(credentials.........)\
+              sh "docker build ..........."
+              sh "docker tag netflix......."'
+              sh "docker push.................."
+  }
+}
+}
+}
+stage('TRIVY Image Scan') {{
+    steps {
+           sh "trivy image ....................."
+  }
+}
+stage('Deploy to contianre') {
+  steps {
+   sh "docker run -d -p 8081:80 .........."
+ }
+}
+}
+
+
+         
